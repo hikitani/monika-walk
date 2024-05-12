@@ -1,0 +1,209 @@
+{{define "title"}}Го на улицу{{end}}
+
+{{define "links"}}
+<script src="/static/js/noMobileBodyFixed.js"></script>
+<script src="/static/js/noise.js"></script>
+<link rel="stylesheet" href="/static/css/doki.css">
+{{end}} {{define "body"}}
+
+<style>
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 10px;
+    background-color: #f0f0f0;
+  }
+
+  .container {
+    position: relative;
+    width: 100%;
+    height: 90%;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 3em;
+    color: #ba5297;
+  }
+
+  p {
+    font-size: 1.5em;
+    color: #666;
+  }
+
+  .button {
+    margin: 10px;
+    padding: 10px 20px;
+    background-color: #fff;
+    border: 1px solid #888;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .button:hover {
+    background-color: #f0f0f0;
+  }
+
+  .button:active {
+    transform: scale(0.9);
+  }
+
+  .runaway-button {
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  #monika-img {
+    position: absolute;
+    top: 20%;
+    z-index: -1;
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+
+  .modal-container {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+  }
+
+  .close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+  }
+</style>
+
+<div id="myModal" class="modal">
+  <div class="modal-container">
+    <span onclick="closeModal()" class="close">&times;</span>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+  function openModal(content) {
+    document.getElementById("myModal").style.display = "block";
+    let modal = document.getElementById("modal-content");
+    modal.innerHTML = content;
+  }
+
+  function closeModal() {
+    document.getElementById("myModal").style.display = "none";
+  }
+</script>
+
+<div class="container">
+  <h1 id="main-text" class="doki-text">Пошли на улицу</h1>
+  <div id="button-group">
+    <button class="button" id="yesButton">Да</button>
+    <button class="button runaway-button" id="noButton">Нет</button>
+  </div>
+</div>
+
+<img id="monika-img" src="/static/img/monika.png" alt="monika" />
+
+<script>
+  let yesButton = document.getElementById("yesButton");
+  let noButton = document.getElementById("noButton");
+  let monikaImg = document.querySelector("img");
+  let noiseAlpha = 20;
+
+  let scaleMonika = 1;
+  let topPosMonika = 20;
+  const zoomMonika = () => {
+    scaleMonika = Math.min(3, scaleMonika + 0.25);
+    topPosMonika = Math.min(55, topPosMonika + 6);
+
+    monikaImg.style.transform = `scale(${scaleMonika})`;
+    monikaImg.style.top = `${topPosMonika}%`;
+  };
+
+  const moveButtonAndAddNoise = () => {
+    const container = document.querySelector(".container");
+
+    const maxX = container.clientWidth - noButton.clientWidth;
+    const maxY = container.clientHeight - noButton.clientHeight;
+
+    const randomX = Math.random() * maxX;
+    const randomY = Math.random() * maxY;
+
+    noButton.style.position = "absolute";
+    noButton.style.left = `${randomX}px`;
+    noButton.style.top = `${randomY}px`;
+
+    addNoise(document.body, noiseAlpha);
+    noiseAlpha = Math.min(255, noiseAlpha + 32);
+  };
+
+  yesButton.addEventListener("click", confirmMessage);
+
+  noButton.addEventListener("mouseover", moveButtonAndAddNoise);
+  noButton.addEventListener("click", moveButtonAndAddNoise);
+
+  noButton.addEventListener("mouseover", zoomMonika);
+  noButton.addEventListener("click", zoomMonika);
+
+  async function checkMonikaScale() {
+    if (scaleMonika >= 3) {
+      openModal(`
+        <p>Ты охуив шоле!? 🤨</p>
+        <button onclick="closeMonikaWarning()" class="button">Да</button>
+      `);
+      return;
+    }
+
+    setTimeout(checkMonikaScale, 1000);
+  }
+
+  function closeMonikaWarning() {
+    openModal(`
+      <p>Я тебе щас по да'каю.</p>
+      <button onclick="confirmMessage()" class="button">Хорошо, я пойду гулять</button>
+    `);
+  }
+
+  function confirmMessage() {
+    removeNoise(document.body)
+    monikaImg.style.display = "none";
+    document.body.style.background = `url("/static/img/great-monika.jpg")`;
+    document.body.style.backgroundSize = "cover";
+
+    document.getElementById("button-group").remove();
+    document.getElementById("main-text").innerText = "Я тебя жду! :3";
+
+    openModal(`
+        <p>Отлично! Поднимай свою жопку и выдвигайся на улицу</p>
+        <button onclick="closeModal()" class="button">Хорошо</button>
+    `);
+  }
+
+  checkMonikaScale();
+</script>
+{{end}}
