@@ -12,4 +12,5 @@ FROM alpine
 RUN apk update --no-cache && apk add --no-cache ca-certificates
 WORKDIR /build
 COPY --from=builder /build/ /build/
+EXPOSE 8080
 CMD ["./sigma"]
