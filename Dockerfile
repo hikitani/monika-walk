@@ -1,6 +1,6 @@
 FROM golang:alpine AS builder
 WORKDIR /build
-ENV CGO_ENABLED 0
+ENV CGO_ENABLED=0
 RUN apk update --no-cache && apk add --no-cache tzdata
 ADD go.mod .
 ADD go.sum .
