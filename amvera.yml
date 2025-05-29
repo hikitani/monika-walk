@@ -9,5 +9,5 @@ build:
 run:
   image: golang:1.22
   persistenceMount: /data
-  containerPort: "80"
+  containerPort: "8080"
   servicePort: "80"
