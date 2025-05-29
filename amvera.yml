@@ -1,8 +1,6 @@
 meta:
-  environment: golang
-  toolchain:
-    name: go
-    version: "1.22"
+  environment: docker
+  toolchain: docker
 build:
   skip: false
   dockerfile: Dockerfile
